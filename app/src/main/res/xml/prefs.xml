@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Settings">
+
+        <Preference
+            android:key="username"
+            android:selectable="false"
+            android:summary="jebex"
+            android:title="Your username" />
+
+        <Preference
+            android:key="share_code"
+            android:selectable="false"
+            android:summary="SLF92KDB01KE5DNW"
+            android:title="Share your vehicle with a friend" />
+
+        <EditTextPreference
+            android:dialogTitle="Enter license number"
+            android:key="license_number"
+            android:summary="Enter license number"
+            android:title="Vehicle license number" />
+
+        <ListPreference
+            android:defaultValue="E95"
+            android:dialogTitle="Select petrol type"
+            android:entries="@array/petrolTypeText"
+            android:entryValues="@array/petrolTypeValues"
+            android:key="petrol_type"
+            android:summary="%s"
+            android:title="Petrol type" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

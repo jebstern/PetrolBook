@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">PetrolBook</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+
+    <string-array name="petrolTypeText">
+        <item>E95</item>
+        <item>E98</item>
+        <item>Diesel</item>
+    </string-array>
+
+    <string-array name="petrolTypeValues">
+        <item>E95</item>
+        <item>E98</item>
+        <item>Diesel</item>
+    </string-array>
+
+</resources>
