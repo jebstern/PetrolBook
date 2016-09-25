@@ -8,9 +8,7 @@ import android.view.ViewGroup;
 
 import com.jebstern.petrolbook.R;
 
-
 public class NewRefuelFragment extends Fragment {
-
 
     public NewRefuelFragment() {
         // Required empty public constructor
@@ -21,10 +19,10 @@ public class NewRefuelFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_new_refuel, container, false);
 
+
         getActivity().setTitle("New refuel");
         return rootView;
     }
-
 
 
 

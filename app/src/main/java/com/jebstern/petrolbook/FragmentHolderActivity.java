@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.jebstern.petrolbook.fragments.AllRefuelsFragment;
 import com.jebstern.petrolbook.fragments.HomeFragment;
 import com.jebstern.petrolbook.fragments.NewRefuelFragment;
 import com.jebstern.petrolbook.fragments.SettingsFragment;
@@ -81,9 +82,10 @@ public class FragmentHolderActivity extends AppCompatActivity
         } else if (id == R.id.nav_new_refuel) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new NewRefuelFragment()).commit();
         } else if (id == R.id.nav_all_refuels) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new NewRefuelFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new AllRefuelsFragment()).commit();
         } else if (id == R.id.nav_settings) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new SettingsFragment()).commit();
+            setTitle("Settings");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
