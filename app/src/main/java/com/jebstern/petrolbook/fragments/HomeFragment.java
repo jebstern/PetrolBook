@@ -45,7 +45,6 @@ public class HomeFragment extends Fragment {
         }
 
 
-        getActivity().setTitle("Home");
         return rootView;
     }
 

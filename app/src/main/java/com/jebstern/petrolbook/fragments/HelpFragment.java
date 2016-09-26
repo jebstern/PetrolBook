@@ -10,16 +10,12 @@ import com.jebstern.petrolbook.R;
 
 public class HelpFragment extends Fragment {
 
-
     public HelpFragment() {
         // Required empty public constructor
     }
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_help, container, false);
     }
 

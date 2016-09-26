@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.jebstern.petrolbook.fragments.AllRefuelsFragment;
+import com.jebstern.petrolbook.fragments.HelpFragment;
 import com.jebstern.petrolbook.fragments.HomeFragment;
 import com.jebstern.petrolbook.fragments.NewRefuelFragment;
 import com.jebstern.petrolbook.fragments.SettingsFragment;
@@ -71,21 +72,26 @@ public class FragmentHolderActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment()).commit();
+            setTitle("Home");
         } else if (id == R.id.nav_new_refuel) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new NewRefuelFragment()).commit();
+            setTitle("New refuel");
         } else if (id == R.id.nav_all_refuels) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new AllRefuelsFragment()).commit();
+            setTitle("All refuels");
         } else if (id == R.id.nav_settings) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new SettingsFragment()).commit();
             setTitle("Settings");
+        } else if (id == R.id.nav_help) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new HelpFragment()).commit();
+            setTitle("Help");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

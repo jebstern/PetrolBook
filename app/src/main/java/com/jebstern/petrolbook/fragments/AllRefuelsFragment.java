@@ -1,7 +1,10 @@
 package com.jebstern.petrolbook.fragments;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -25,7 +28,7 @@ import retrofit2.Response;
 public class AllRefuelsFragment extends Fragment {
 
     private RecyclerView mRecyclerViewRefuels;
-
+    ProgressDialog mProgressDialog;
 
     public AllRefuelsFragment() {
         // Required empty public constructor
@@ -36,17 +39,19 @@ public class AllRefuelsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_all_refuels, container, false);
 
-
         mRecyclerViewRefuels = (RecyclerView) rootView.findViewById(R.id.rv_refuels);
 
-
-        getActivity().setTitle("All refuels");
-
-        getKeikat();
+        getAllRefuels();
         return rootView;
     }
 
-    public void getKeikat() {
+    public void getAllRefuels() {
+
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setTitle("Downloading refuels");
+        mProgressDialog.setIndeterminate(false);
+        mProgressDialog.show();
+
         Call<List<AllRefuelsResponse>> call = new RestClient().getApiService().getAllRefuels("jebex");
         call.enqueue(new Callback<List<AllRefuelsResponse>>() {
             @Override
@@ -56,9 +61,21 @@ public class AllRefuelsFragment extends Fragment {
                 mRecyclerViewRefuels.setHasFixedSize(true);
                 mRecyclerViewRefuels.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
                 mRecyclerViewRefuels.setAdapter(new MyRecyclerViewAdapter(allRefuelsList, getContext()));
+                mProgressDialog.dismiss();
             }
             @Override
             public void onFailure(Call<List<AllRefuelsResponse>> call, Throwable t) {
+                mProgressDialog.dismiss();
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+                alertDialogBuilder.setTitle("Download error");
+                alertDialogBuilder.setMessage("Unable to download refuels");
+                alertDialogBuilder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
                 Log.e("onFailure", t.toString());
             }
         });
