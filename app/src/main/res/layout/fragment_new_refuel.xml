@@ -47,11 +47,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/gas24"
-                android:textSize="24sp"
                 android:drawablePadding="13dp"
                 android:ems="10"
                 android:hint="Amount"
-                android:inputType="numberDecimal" />
+                android:inputType="numberDecimal"
+                android:textSize="24sp" />
         </android.support.design.widget.TextInputLayout>
 
 
@@ -66,12 +66,41 @@
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/euro24"
                 android:drawablePadding="13dp"
-                android:textSize="24sp"
                 android:ems="10"
                 android:hint="Price"
-                android:inputType="numberDecimal" />
+                android:inputType="numberDecimal"
+                android:textSize="24sp" />
         </android.support.design.widget.TextInputLayout>
 
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rb_e95"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:layout_weight="1"
+                android:text="E95" />
+
+            <RadioButton
+                android:id="@+id/rb_e98"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="E98" />
+
+            <RadioButton
+                android:id="@+id/rb_diesel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Diesel" />
+        </RadioGroup>
 
         <Button
             android:id="@+id/button_addRefuel"
@@ -80,8 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:elevation="4dp"
-            android:text="Save" />
-
+            android:text="Save refuel" />
 
     </LinearLayout>
 
