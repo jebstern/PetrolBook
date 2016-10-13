@@ -166,7 +166,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
             realm.close();
-            Intent intent = new Intent(LoginActivity.this, WelcomeActivity.class);
+            Intent intent = new Intent(LoginActivity.this, FragmentHolderActivity.class);
             startActivity(intent);
             finish();
         } else {
