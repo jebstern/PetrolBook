@@ -1,6 +1,7 @@
 package com.jebstern.petrolbook;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,14 +9,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewTextChangeEvent;
+import com.jebstern.petrolbook.extras.Utilities;
 import com.jebstern.petrolbook.models.User;
 import com.jebstern.petrolbook.rest.CreateAccountResponse;
 import com.jebstern.petrolbook.rest.RestClient;
 import com.jebstern.petrolbook.rest.UsernameAvailabilityResponse;
 
+import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
@@ -27,46 +31,43 @@ import retrofit2.Response;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText mEditTextUsername;
-    private Subscription mSubscription;
-    Button mBtnCreateAccount;
+    private EditText mEditTextUsername;
+    private EditText mEditTextPassword;
+    private Button mBtnCreateAccount;
     private TextInputLayout mTextInputLayoutUsername;
-
+    private TextInputLayout mTextInputLayoutPassword;
+    private Subscription mSubscriptionUsername;
+    private Subscription mSubscriptionPassword;
+    private boolean mCreateAccount = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Realm realm = Realm.getDefaultInstance();
-        RealmQuery<User> query = realm.where(User.class);
-        RealmResults<User> result = query.findAll();
-        int users = result.size();
-        realm.close();
-
-        if (users > 0) {
+        if (Utilities.readAccountRegisteredFromPreferences(this)) {
             Intent intent = new Intent(LoginActivity.this, FragmentHolderActivity.class);
             startActivity(intent);
             finish();
         } else {
             mEditTextUsername = (EditText) findViewById(R.id.et_username);
-            mTextInputLayoutUsername = (TextInputLayout) findViewById(R.id.input_layout_username);
+            mEditTextPassword = (EditText) findViewById(R.id.et_password);
+            mTextInputLayoutUsername = (TextInputLayout) findViewById(R.id.til_username);
+            mTextInputLayoutPassword = (TextInputLayout) findViewById(R.id.til_password);
             mBtnCreateAccount = (Button) findViewById(R.id.btn_createAccount);
-            mBtnCreateAccount.setEnabled(false);
-            setupSubscription();
         }
 
     }
 
 
-    private Observer<TextViewTextChangeEvent> _getSearchObserver() {
+    private Observer<TextViewTextChangeEvent> getUsernameObserver() {
         return new Observer<TextViewTextChangeEvent>() {
             @Override
             public void onCompleted() {
-                Log.e("RxResult", "--------- onComplete");
             }
 
             @Override
@@ -76,25 +77,60 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onNext(TextViewTextChangeEvent onTextChangeEvent) {
-                Log.e("RxResult", "onNext: " + onTextChangeEvent.text().toString());
+                Log.e("RxResult", "getUsernameObserver - onNext: " + onTextChangeEvent.text().toString());
+                mCreateAccount = false;
                 setupMessage();
             }
         };
     }
 
 
+    private Observer<TextViewTextChangeEvent> getPasswordObserver() {
+        return new Observer<TextViewTextChangeEvent>() {
+            @Override
+            public void onCompleted() {
+            }
+            @Override
+            public void onError(Throwable e) {
+                Log.e("RxResult", "onError - Dang error. check your logs");
+            }
+            @Override
+            public void onNext(TextViewTextChangeEvent onTextChangeEvent) {
+                Log.e("RxResult", "getPasswordObserver - onNext: " + onTextChangeEvent.text().toString());
+                if ( onTextChangeEvent.text().toString().length() > 0 && onTextChangeEvent.text().toString().length() < 6 ) {
+                    mTextInputLayoutPassword.setError("Password is too short (min. 6 characters)!");
+                } else {
+                    mTextInputLayoutPassword.setErrorEnabled(false);
+                }
+
+            }
+        };
+    }
+
+
     public void createAccountButtonClicked(View view) {
-        createAccount();
+        mCreateAccount = true;
+        setupMessage();
     }
 
 
     public void usernameAvailable(boolean usernameIsAvailable) {
         if (!usernameIsAvailable) {
-            mBtnCreateAccount.setEnabled(false);
+            setErrorTextColor(mTextInputLayoutUsername, Color.rgb(255, 0, 0));
             mTextInputLayoutUsername.setError("Username '" + mEditTextUsername.getText().toString() + "' is not available");
         } else {
-            mBtnCreateAccount.setEnabled(true);
+            setErrorTextColor(mTextInputLayoutUsername, Color.rgb(34, 139, 34));
             mTextInputLayoutUsername.setError("Username '" + mEditTextUsername.getText().toString() + "' is available");
+            if (mCreateAccount) {
+                String password = mEditTextPassword.getText().toString();
+                mTextInputLayoutPassword.setErrorEnabled(false);
+                if (password.length() > 5) {
+                    createAccount();
+                } else {
+                    mTextInputLayoutPassword.setError("Password is too short (min. 6 characters)!");
+                }
+
+            }
         }
     }
 
@@ -103,7 +139,6 @@ public class LoginActivity extends AppCompatActivity {
         String username = mEditTextUsername.getText().toString();
         if ("".equalsIgnoreCase(username)) {
             mTextInputLayoutUsername.setError("Username can't be empty!");
-            mBtnCreateAccount.setEnabled(false);
         } else {
             mTextInputLayoutUsername.setError("Checking availability...");
             checkIfUsernameAvailable();
@@ -156,16 +191,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void createAccountResult(boolean accountCreated, String message) {
         if (accountCreated) {
-            Realm realm = Realm.getDefaultInstance();
-            final String username = mEditTextUsername.getText().toString();
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    User user = realm.createObject(User.class);
-                    user.setUsername(username);
-                }
-            });
-            realm.close();
+            Utilities.writeUsernameIntoPreferences(this, mEditTextUsername.getText().toString());
             Intent intent = new Intent(LoginActivity.this, FragmentHolderActivity.class);
             startActivity(intent);
             finish();
@@ -176,24 +202,41 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setupSubscription() {
-        mSubscription = RxTextView.textChangeEvents(mEditTextUsername)
-                .debounce(1000, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())// default Scheduler is Computation
-                /*.filter(new Func1<TextViewTextChangeEvent, Boolean>() {
+        mSubscriptionUsername = RxTextView.textChangeEvents(mEditTextUsername)
+                .debounce(1000, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())  // default Scheduler is Computation
+                .filter(new Func1<TextViewTextChangeEvent, Boolean>() {
                     @Override
                     public Boolean call(TextViewTextChangeEvent changes) {
                         String username = mEditTextUsername.getText().toString();
                         Log.e("RxResult", "call: username.isEmpty()=" + username.isEmpty());
                         return (!username.isEmpty());
                     }
-                })*/
+                })
                 .observeOn(AndroidSchedulers.mainThread())//
-                .subscribe(_getSearchObserver());
+                .subscribe(getUsernameObserver());
+
+        mSubscriptionPassword = RxTextView.textChangeEvents(mEditTextPassword)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(getPasswordObserver());
+    }
+
+    public static void setErrorTextColor(TextInputLayout textInputLayout, int color) {
+        try {
+            Field fErrorView = TextInputLayout.class.getDeclaredField("mErrorView");
+            fErrorView.setAccessible(true);
+            TextView mErrorView = (TextView) fErrorView.get(textInputLayout);
+            mErrorView.setTextColor(color);
+            mErrorView.requestLayout();
+        } catch (Exception e) {
+            Log.e("asd", "setErrorTextColor error!");
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mSubscription.unsubscribe();
+        mSubscriptionUsername.unsubscribe();
+        mSubscriptionPassword.unsubscribe();
     }
 
     @Override

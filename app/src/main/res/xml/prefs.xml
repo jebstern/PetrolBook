@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-
         <Preference
             android:key="username"
             android:selectable="false"
-            android:summary="jebex"
+            android:summary="testing"
             android:title="Your username" />
 
         <Preference
