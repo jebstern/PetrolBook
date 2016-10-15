@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewTextChangeEvent;
 import com.jebstern.petrolbook.extras.Utilities;
-import com.jebstern.petrolbook.models.User;
+
 import com.jebstern.petrolbook.rest.CreateAccountResponse;
 import com.jebstern.petrolbook.rest.RestClient;
 import com.jebstern.petrolbook.rest.UsernameAvailabilityResponse;
@@ -22,9 +22,7 @@ import com.jebstern.petrolbook.rest.UsernameAvailabilityResponse;
 import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
 
-import io.realm.Realm;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,101 +45,59 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+
 
         if (Utilities.readAccountRegisteredFromPreferences(this)) {
             Intent intent = new Intent(LoginActivity.this, FragmentHolderActivity.class);
             startActivity(intent);
             finish();
         } else {
+            setContentView(R.layout.activity_login);
             mEditTextUsername = (EditText) findViewById(R.id.et_username);
             mEditTextPassword = (EditText) findViewById(R.id.et_password);
             mTextInputLayoutUsername = (TextInputLayout) findViewById(R.id.til_username);
             mTextInputLayoutPassword = (TextInputLayout) findViewById(R.id.til_password);
             mBtnCreateAccount = (Button) findViewById(R.id.btn_createAccount);
         }
-
     }
-
-
-    private Observer<TextViewTextChangeEvent> getUsernameObserver() {
-        return new Observer<TextViewTextChangeEvent>() {
-            @Override
-            public void onCompleted() {
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.e("RxResult", "onError - Dang error. check your logs");
-            }
-
-            @Override
-            public void onNext(TextViewTextChangeEvent onTextChangeEvent) {
-                Log.e("RxResult", "getUsernameObserver - onNext: " + onTextChangeEvent.text().toString());
-                mCreateAccount = false;
-                setupMessage();
-            }
-        };
-    }
-
-
-    private Observer<TextViewTextChangeEvent> getPasswordObserver() {
-        return new Observer<TextViewTextChangeEvent>() {
-            @Override
-            public void onCompleted() {
-            }
-            @Override
-            public void onError(Throwable e) {
-                Log.e("RxResult", "onError - Dang error. check your logs");
-            }
-            @Override
-            public void onNext(TextViewTextChangeEvent onTextChangeEvent) {
-                Log.e("RxResult", "getPasswordObserver - onNext: " + onTextChangeEvent.text().toString());
-                if ( onTextChangeEvent.text().toString().length() > 0 && onTextChangeEvent.text().toString().length() < 6 ) {
-                    mTextInputLayoutPassword.setError("Password is too short (min. 6 characters)!");
-                } else {
-                    mTextInputLayoutPassword.setErrorEnabled(false);
-                }
-
-            }
-        };
-    }
-
 
     public void createAccountButtonClicked(View view) {
         mCreateAccount = true;
-        setupMessage();
+        checkIfUsernameAvailable();
     }
-
 
     public void usernameAvailable(boolean usernameIsAvailable) {
         if (!usernameIsAvailable) {
             setErrorTextColor(mTextInputLayoutUsername, Color.rgb(255, 0, 0));
             mTextInputLayoutUsername.setError("Username '" + mEditTextUsername.getText().toString() + "' is not available");
         } else {
-            setErrorTextColor(mTextInputLayoutUsername, Color.rgb(34, 139, 34));
-            mTextInputLayoutUsername.setError("Username '" + mEditTextUsername.getText().toString() + "' is available");
             if (mCreateAccount) {
-                String password = mEditTextPassword.getText().toString();
                 mTextInputLayoutPassword.setErrorEnabled(false);
-                if (password.length() > 5) {
-                    createAccount();
+                if (Utilities.isAcceptableUsername(mEditTextUsername.getText().toString())) {
+                    if (Utilities.isAcceptablePassword(mEditTextPassword.getText().toString())) {
+                        createAccount();
+                    } else {
+                        mTextInputLayoutPassword.setError("Password is too short (min. 6 characters)!");
+                    }
                 } else {
-                    mTextInputLayoutPassword.setError("Password is too short (min. 6 characters)!");
+                    setErrorTextColor(mTextInputLayoutUsername, Color.rgb(255, 0, 0));
+                    mTextInputLayoutUsername.setError("Username is too short (min. 4 characters)!");
                 }
-
+            } else {
+                setErrorTextColor(mTextInputLayoutUsername, Color.rgb(34, 139, 34));
+                mTextInputLayoutUsername.setError("Username '" + mEditTextUsername.getText().toString() + "' is available");
             }
         }
     }
 
 
     public void setupMessage() {
-        String username = mEditTextUsername.getText().toString();
-        if ("".equalsIgnoreCase(username)) {
-            mTextInputLayoutUsername.setError("Username can't be empty!");
-        } else {
+        if (Utilities.isAcceptableUsername(mEditTextUsername.getText().toString())) {
             mTextInputLayoutUsername.setError("Checking availability...");
             checkIfUsernameAvailable();
+        } else {
+            setErrorTextColor(mTextInputLayoutUsername, Color.rgb(255, 0, 0));
+            mTextInputLayoutUsername.setError("Username is too short (min. 4 characters)!");
         }
     }
 
@@ -230,6 +186,51 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("asd", "setErrorTextColor error!");
         }
+    }
+
+    private Observer<TextViewTextChangeEvent> getUsernameObserver() {
+        return new Observer<TextViewTextChangeEvent>() {
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e("RxResult", "onError - Dang error. check your logs");
+            }
+
+            @Override
+            public void onNext(TextViewTextChangeEvent onTextChangeEvent) {
+                Log.e("RxResult", "getUsernameObserver - onNext: " + onTextChangeEvent.text().toString());
+                mCreateAccount = false;
+                setupMessage();
+            }
+        };
+    }
+
+
+    private Observer<TextViewTextChangeEvent> getPasswordObserver() {
+        return new Observer<TextViewTextChangeEvent>() {
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e("RxResult", "onError - Dang error. check your logs");
+            }
+
+            @Override
+            public void onNext(TextViewTextChangeEvent onTextChangeEvent) {
+                Log.e("RxResult", "getPasswordObserver - onNext: " + onTextChangeEvent.text().toString());
+                if (onTextChangeEvent.text().toString().length() > 0 && onTextChangeEvent.text().toString().length() < 6) {
+                    mTextInputLayoutPassword.setError("Password is too short (min. 6 characters)!");
+                } else {
+                    mTextInputLayoutPassword.setErrorEnabled(false);
+                }
+
+            }
+        };
     }
 
     @Override

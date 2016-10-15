@@ -1,5 +1,6 @@
 package com.jebstern.petrolbook.fragments;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,13 +10,12 @@ import android.widget.Button;
 
 
 import com.jebstern.petrolbook.R;
-import com.jebstern.petrolbook.models.Refill;
-import io.realm.Realm;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 
 
 public class HomeFragment extends Fragment {
+
+    ProgressDialog mProgressDialog;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -25,13 +25,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView;
 
-        Realm realm = Realm.getDefaultInstance();
-        RealmQuery<Refill> query = realm.where(Refill.class);
-        RealmResults<Refill> result = query.findAll();
-        int refills = result.size();
-        realm.close();
-
-        if (refills > 0) {
+        if (getNewestRefuel()) {
             rootView = inflater.inflate(R.layout.fragment_home, container, false);
         } else {
             rootView = inflater.inflate(R.layout.fragment_home_first_time, container, false);
@@ -44,8 +38,19 @@ public class HomeFragment extends Fragment {
             });
         }
 
-
         return rootView;
     }
+
+
+    public boolean getNewestRefuel() {
+        /*
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setTitle("Getting data");
+        mProgressDialog.setMessage("Checking latest refuel...");
+        mProgressDialog.setIndeterminate(false);
+        mProgressDialog.show();*/
+        return false;
+    }
+
 
 }

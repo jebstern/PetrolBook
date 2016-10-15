@@ -3,7 +3,7 @@ package com.jebstern.petrolbook.rest;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class AllRefuelsResponse {
+public class RefuelResponse {
     @SerializedName("id")
     @Expose
     private String id;

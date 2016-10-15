@@ -15,5 +15,5 @@ public interface API_Service {
     Call<CreateAccountResponse> createAccount(@Path("user") String username);
 
     @GET("refuels/{user}/")
-    Call<List<AllRefuelsResponse>> getAllRefuels(@Path("user") String username);
+    Call<List<RefuelResponse>> getAllRefuels(@Path("user") String username);
 }

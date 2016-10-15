@@ -11,11 +11,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.jebstern.petrolbook.R;
 import com.jebstern.petrolbook.extras.DividerItemDecoration;
 import com.jebstern.petrolbook.extras.MyRecyclerViewAdapter;
-import com.jebstern.petrolbook.rest.AllRefuelsResponse;
+import com.jebstern.petrolbook.rest.RefuelResponse;
 import com.jebstern.petrolbook.rest.RestClient;
 
 import java.util.List;
@@ -52,19 +53,31 @@ public class AllRefuelsFragment extends Fragment {
         mProgressDialog.setIndeterminate(false);
         mProgressDialog.show();
 
-        Call<List<AllRefuelsResponse>> call = new RestClient().getApiService().getAllRefuels("jebex");
-        call.enqueue(new Callback<List<AllRefuelsResponse>>() {
+        Call<List<RefuelResponse>> call = new RestClient().getApiService().getAllRefuels("jebex");
+        call.enqueue(new Callback<List<RefuelResponse>>() {
             @Override
-            public void onResponse(Call<List<AllRefuelsResponse>> call, Response<List<AllRefuelsResponse>> response) {
-                List<AllRefuelsResponse> allRefuelsList = response.body();
+            public void onResponse(Call<List<RefuelResponse>> call, Response<List<RefuelResponse>> response) {
+                List<RefuelResponse> refuelList = response.body();
+                final MyRecyclerViewAdapter adapter = new MyRecyclerViewAdapter(refuelList);
                 mRecyclerViewRefuels.setLayoutManager(new LinearLayoutManager(getActivity()));
                 mRecyclerViewRefuels.setHasFixedSize(true);
                 mRecyclerViewRefuels.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
-                mRecyclerViewRefuels.setAdapter(new MyRecyclerViewAdapter(allRefuelsList, getContext()));
+                mRecyclerViewRefuels.setAdapter(adapter);
+                adapter.setOnItemClickListener(new MyRecyclerViewAdapter.ClickListener() {
+                    @Override
+                    public void onItemClick(int position, View v) {
+                    }
+                    @Override
+                    public void onItemLongClick(int position, View v) {
+                        RefuelResponse refuel = adapter.getItem(position);
+                        Toast.makeText(getActivity(), refuel.getAddress(), Toast.LENGTH_LONG).show();
+                    }
+                });
                 mProgressDialog.dismiss();
             }
+
             @Override
-            public void onFailure(Call<List<AllRefuelsResponse>> call, Throwable t) {
+            public void onFailure(Call<List<RefuelResponse>> call, Throwable t) {
                 mProgressDialog.dismiss();
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
                 alertDialogBuilder.setTitle("Download error");

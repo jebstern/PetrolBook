@@ -65,9 +65,9 @@
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
             android:onClick="createAccountButtonClicked"
-            android:text="Sign up"
-            android:theme="@style/CreateAccountButtonStyle"
-            android:transitionName="buttonNext" />
+            android:textSize="25sp"
+            android:text="Continue"
+            android:theme="@style/CreateAccountButtonStyle" />
 
         <TextView
             android:id="@+id/tv_usernameEcistsMessage"

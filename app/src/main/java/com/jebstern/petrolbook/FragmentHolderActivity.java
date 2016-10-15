@@ -7,9 +7,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
+import com.jebstern.petrolbook.extras.Utilities;
 import com.jebstern.petrolbook.fragments.AllRefuelsFragment;
 import com.jebstern.petrolbook.fragments.HelpFragment;
 import com.jebstern.petrolbook.fragments.HomeFragment;
@@ -26,7 +28,6 @@ public class FragmentHolderActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -35,8 +36,12 @@ public class FragmentHolderActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment()).commit();
+        /** This enables us to fetch views from the "nav_header_main.xml'. Handy if want to dynamically manipulate text etc. **/
+        View header = navigationView.getHeaderView(0);
+        TextView tvHeaderUsername = (TextView) header.findViewById(R.id.tv_header_username);
+        tvHeaderUsername.setText(Utilities.readUsernameFromPreferences(this));
 
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment()).commit();
     }
 
     @Override
@@ -51,32 +56,8 @@ public class FragmentHolderActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.nav_home) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment()).commit();
             setTitle("Home");
@@ -93,11 +74,9 @@ public class FragmentHolderActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new HelpFragment()).commit();
             setTitle("Help");
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
 
 }
