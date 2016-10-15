@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import com.jebstern.petrolbook.R;
 import com.jebstern.petrolbook.extras.DividerItemDecoration;
-import com.jebstern.petrolbook.extras.MyRecyclerViewAdapter;
+import com.jebstern.petrolbook.adapters.MyRecyclerViewAdapter;
 import com.jebstern.petrolbook.rest.RefuelResponse;
 import com.jebstern.petrolbook.rest.RestClient;
 
@@ -63,16 +63,6 @@ public class AllRefuelsFragment extends Fragment {
                 mRecyclerViewRefuels.setHasFixedSize(true);
                 mRecyclerViewRefuels.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
                 mRecyclerViewRefuels.setAdapter(adapter);
-                adapter.setOnItemClickListener(new MyRecyclerViewAdapter.ClickListener() {
-                    @Override
-                    public void onItemClick(int position, View v) {
-                    }
-                    @Override
-                    public void onItemLongClick(int position, View v) {
-                        RefuelResponse refuel = adapter.getItem(position);
-                        Toast.makeText(getActivity(), refuel.getAddress(), Toast.LENGTH_LONG).show();
-                    }
-                });
                 mProgressDialog.dismiss();
             }
 

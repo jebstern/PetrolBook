@@ -7,9 +7,9 @@ public class RefuelResponse {
     @SerializedName("id")
     @Expose
     private String id;
-    @SerializedName("user_id")
+    @SerializedName("username")
     @Expose
-    private String userId;
+    private String username;
     @SerializedName("address")
     @Expose
     private String address;
@@ -47,19 +47,19 @@ public class RefuelResponse {
     /**
      *
      * @return
-     * The userId
+     * The username
      */
-    public String getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
     /**
      *
-     * @param userId
-     * The user_id
+     * @param username
+     * The username
      */
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     /**

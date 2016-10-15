@@ -4,17 +4,12 @@
     android:layout_height="match_parent"
     tools:context="com.jebstern.petrolbook.fragments.AllRefuelsFragment">
 
-    <LinearLayout
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_refuels"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:background="@null" />
 
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_refuels"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null" />
-    </LinearLayout>
 
 </FrameLayout>
