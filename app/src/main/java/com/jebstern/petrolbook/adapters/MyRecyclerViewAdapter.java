@@ -30,8 +30,8 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     public void onBindViewHolder(MyViewHolder holder, int position) {
         holder.address.setText(refuelList.get(position).getAddress());
         holder.date.setText(refuelList.get(position).getTime());
-        holder.amount.setText(refuelList.get(position).getAmount());
-        holder.price.setText(refuelList.get(position).getPrice());
+        holder.amount.setText(refuelList.get(position).getAmount() + "L");
+        holder.price.setText(refuelList.get(position).getPrice() + "€");
         holder.type.setText(refuelList.get(position).getType());
     }
 

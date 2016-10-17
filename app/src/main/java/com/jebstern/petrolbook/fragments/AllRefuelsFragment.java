@@ -11,11 +11,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jebstern.petrolbook.R;
 import com.jebstern.petrolbook.extras.DividerItemDecoration;
 import com.jebstern.petrolbook.adapters.MyRecyclerViewAdapter;
+import com.jebstern.petrolbook.extras.Utilities;
 import com.jebstern.petrolbook.rest.RefuelResponse;
 import com.jebstern.petrolbook.rest.RestClient;
 
@@ -30,6 +33,7 @@ public class AllRefuelsFragment extends Fragment {
 
     private RecyclerView mRecyclerViewRefuels;
     ProgressDialog mProgressDialog;
+    FrameLayout mFrameLayoutRefuels;
 
     public AllRefuelsFragment() {
         // Required empty public constructor
@@ -42,27 +46,32 @@ public class AllRefuelsFragment extends Fragment {
 
         mRecyclerViewRefuels = (RecyclerView) rootView.findViewById(R.id.rv_refuels);
 
-        getAllRefuels();
+        getAllRefuels(rootView);
         return rootView;
     }
 
-    public void getAllRefuels() {
+    public void getAllRefuels(final View rootView) {
 
         mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setTitle("Downloading refuels");
         mProgressDialog.setIndeterminate(false);
         mProgressDialog.show();
 
-        Call<List<RefuelResponse>> call = new RestClient().getApiService().getAllRefuels("jebex");
+        Call<List<RefuelResponse>> call = new RestClient().getApiService().getAllRefuels(Utilities.readUsernameFromPreferences(getActivity()));
         call.enqueue(new Callback<List<RefuelResponse>>() {
             @Override
             public void onResponse(Call<List<RefuelResponse>> call, Response<List<RefuelResponse>> response) {
                 List<RefuelResponse> refuelList = response.body();
-                final MyRecyclerViewAdapter adapter = new MyRecyclerViewAdapter(refuelList);
-                mRecyclerViewRefuels.setLayoutManager(new LinearLayoutManager(getActivity()));
-                mRecyclerViewRefuels.setHasFixedSize(true);
-                mRecyclerViewRefuels.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
-                mRecyclerViewRefuels.setAdapter(adapter);
+                if (refuelList.isEmpty()) {
+                    TextView tvNoRefuels = (TextView) rootView.findViewById(R.id.tvNoRefuels);
+                    tvNoRefuels.setVisibility(View.VISIBLE);
+                } else {
+                    final MyRecyclerViewAdapter adapter = new MyRecyclerViewAdapter(refuelList);
+                    mRecyclerViewRefuels.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    mRecyclerViewRefuels.setHasFixedSize(true);
+                    mRecyclerViewRefuels.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
+                    mRecyclerViewRefuels.setAdapter(adapter);
+                }
                 mProgressDialog.dismiss();
             }
 
@@ -83,6 +92,5 @@ public class AllRefuelsFragment extends Fragment {
             }
         });
     }
-
 
 }

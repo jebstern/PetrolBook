@@ -1,8 +1,10 @@
 package com.jebstern.petrolbook;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -118,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<UsernameAvailabilityResponse> call, Throwable t) {
-                Log.e("onFailure", t.toString());
+                Log.e("onFailure", "checkIfUsernameAvailable: "+t.toString());
             }
         });
     }
@@ -126,7 +128,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void createAccount() {
         String username = mEditTextUsername.getText().toString();
-        Call<CreateAccountResponse> call = new RestClient().getApiService().createAccount(username);
+        String password = mEditTextPassword.getText().toString();
+        Call<CreateAccountResponse> call = new RestClient().getApiService().createAccount(username,password);
         call.enqueue(new Callback<CreateAccountResponse>() {
             @Override
             public void onResponse(Call<CreateAccountResponse> call, Response<CreateAccountResponse> response) {
@@ -140,7 +143,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<CreateAccountResponse> call, Throwable t) {
-                Log.e("onFailure", t.toString());
+                Log.e("onFailure", "createAccount: "+t.toString());
             }
         });
     }
@@ -148,9 +151,19 @@ public class LoginActivity extends AppCompatActivity {
     public void createAccountResult(boolean accountCreated, String message) {
         if (accountCreated) {
             Utilities.writeUsernameIntoPreferences(this, mEditTextUsername.getText().toString());
-            Intent intent = new Intent(LoginActivity.this, FragmentHolderActivity.class);
-            startActivity(intent);
-            finish();
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle("Account created");
+            alertDialogBuilder.setMessage("Your account has been succesfully created. Press OK to continue.");
+            alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                    Intent intent = new Intent(LoginActivity.this, FragmentHolderActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
         } else {
             mBtnCreateAccount.setEnabled(true);
             mTextInputLayoutUsername.setError(message);

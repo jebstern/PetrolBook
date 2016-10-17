@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-        <Preference
-            android:key="username"
-            android:selectable="false"
-            android:summary="testing"
-            android:title="Your username" />
+
 
         <Preference
             android:key="share_code"
             android:selectable="false"
-            android:summary="SLF92KDB01KE5DNW"
+            android:summary="Not yet implemented"
             android:title="Share your vehicle with a friend" />
 
         <EditTextPreference
@@ -28,5 +24,10 @@
             android:summary="%s"
             android:title="Petrol type" />
 
+        <Preference
+            android:key="appVersion"
+            android:selectable="false"
+            android:summary="1.0"
+            android:title="App version" />
 
 </PreferenceScreen>
