@@ -7,11 +7,10 @@ Firebase is good candidate for storing data and syncing it between users, but I 
 Implemented stuff (still more to come):
 - RxJava
 - RetroFit (using GSON)
-- Realm
-
+- Butter knife
+- Splashscreen when coldstarting the app
 
 Not yet implemented:
-- Butter knife
 - MVP pattern
 - Custom animations (if needed)
 - Testing
