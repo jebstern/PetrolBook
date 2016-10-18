@@ -33,4 +33,7 @@ public interface API_Service {
     @GET("refuels/{user}/")
     Call<List<RefuelResponse>> getAllRefuels(@Path("user") String username);
 
+    @GET("refuel/{user}/")
+    Call<RefuelResponse> getNewestRefuel(@Path("user") String username);
+
 }

@@ -1,11 +1,9 @@
 package com.jebstern.petrolbook.fragments;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
-
-import com.jebstern.petrolbook.FragmentHolderActivity;
-import com.jebstern.petrolbook.LoginActivity;
 import com.jebstern.petrolbook.R;
 import com.jebstern.petrolbook.extras.Utilities;
-import com.jebstern.petrolbook.rest.CreateAccountResponse;
 import com.jebstern.petrolbook.rest.CreateRefuelResponse;
 import com.jebstern.petrolbook.rest.RestClient;
 
@@ -95,6 +88,8 @@ public class NewRefuelFragment extends Fragment {
             public void onResponse(Call<CreateRefuelResponse> call, Response<CreateRefuelResponse> response) {
                 CreateRefuelResponse createRefuelResponse = response.body();
                 if (createRefuelResponse.getRefuelCreated()) {
+                    mEditTextAmount.setText("");
+                    mEditTextPrice.setText("");
                     alertDialogBuilder.setTitle("Refuel created");
                     alertDialogBuilder.setMessage(createRefuelResponse.getMessage());
                 } else {
@@ -120,5 +115,6 @@ public class NewRefuelFragment extends Fragment {
         super.onDestroyView();
         unbinder.unbind();
     }
+
 
 }
